@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sample_xml_nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="io.github.dimidrol.capsule.samples.xml.login.LoginFragment"
+        android:label="Login" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="io.github.dimidrol.capsule.samples.xml.destinations.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/forgotFragment"
+        android:name="io.github.dimidrol.capsule.samples.xml.destinations.ForgotFragment"
+        android:label="Forgot" />
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="io.github.dimidrol.capsule.samples.xml.destinations.RegisterFragment"
+        android:label="Register" />
+
+</navigation>

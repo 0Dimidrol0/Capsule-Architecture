@@ -43,6 +43,8 @@ android {
 
 dependencies {
     implementation(project(":capsule-core"))
+    implementation(project(":capsule-base-viewmodel"))
+    implementation(project(":capsule-base-fragment-xml"))
     implementation(project(":capsule-navigation-xml"))
 
     implementation(libs.androidx.core.ktx)

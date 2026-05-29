@@ -50,7 +50,9 @@ Main flow:
 
 ```text
 capsule-core
-    ?
+    ^
+    +-- capsule-base-viewmodel
+    +-- capsule-base-fragment-xml
     +-- capsule-middleware
     +-- capsule-network
     +-- capsule-navigation-compose
@@ -74,6 +76,8 @@ Current version: `0.1.0-SNAPSHOT`
 ```kotlin
 dependencies {
     implementation("io.github.dimidrol:capsule-core:0.1.0-SNAPSHOT")
+    implementation("io.github.dimidrol:capsule-base-viewmodel:0.1.0-SNAPSHOT")
+    implementation("io.github.dimidrol:capsule-base-fragment-xml:0.1.0-SNAPSHOT")
     implementation("io.github.dimidrol:capsule-middleware:0.1.0-SNAPSHOT")
     implementation("io.github.dimidrol:capsule-network:0.1.0-SNAPSHOT")
     implementation("io.github.dimidrol:capsule-navigation-compose:0.1.0-SNAPSHOT")

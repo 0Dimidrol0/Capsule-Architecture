@@ -5,6 +5,15 @@
 ```kotlin
 dependencies {
     implementation("io.github.dimidrol:capsule-core:0.1.0-SNAPSHOT")
+    implementation("io.github.dimidrol:capsule-base-viewmodel:0.1.0-SNAPSHOT")
+}
+```
+
+For Fragment/XML screens you can also add:
+
+```kotlin
+dependencies {
+    implementation("io.github.dimidrol:capsule-base-fragment-xml:0.1.0-SNAPSHOT")
 }
 ```
 

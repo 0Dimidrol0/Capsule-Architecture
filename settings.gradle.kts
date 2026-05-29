@@ -18,6 +18,8 @@ rootProject.name = "Capsule-Architecture"
 
 include(
     ":capsule-core",
+    ":capsule-base-viewmodel",
+    ":capsule-base-fragment-xml",
     ":capsule-middleware",
     ":capsule-network",
     ":capsule-navigation-compose",

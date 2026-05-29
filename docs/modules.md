@@ -3,6 +3,8 @@
 ## Library Modules
 
 - `capsule-core`: pure Kotlin runtime contracts and base runtime.
+- `capsule-base-viewmodel`: thin Android ViewModel shell for Capsule features.
+- `capsule-base-fragment-xml`: lifecycle-safe Fragment/XML base for Capsule screens.
 - `capsule-middleware`: ready-to-use middleware implementations.
 - `capsule-network`: network-aware runtime primitives and Android monitor.
 - `capsule-navigation-compose`: Compose-friendly effect navigation helpers.
@@ -20,7 +22,9 @@ Allowed:
 
 ```text
 capsule-core
-    ?
+    |
+    +-- capsule-base-viewmodel
+    +-- capsule-base-fragment-xml
     +-- capsule-middleware
     +-- capsule-network
     +-- capsule-navigation-compose

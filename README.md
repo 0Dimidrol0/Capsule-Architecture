@@ -81,14 +81,14 @@ the required GitHub secrets and release flow.
 
 ```kotlin
 dependencies {
-    implementation("io.github.0dimidrol0:capsule-core:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-base-viewmodel:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-base-fragment-xml:0.1.0-SNAPSHOT")
-    debugImplementation("io.github.0dimidrol0:capsule-debug:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-middleware:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-network:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-navigation-compose:0.1.0-SNAPSHOT")
-    implementation("io.github.0dimidrol0:capsule-navigation-xml:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-core:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-base-viewmodel:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-base-fragment-xml:0.1.0")
+    debugImplementation("io.github.0dimidrol0:capsule-debug:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-middleware:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-network:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-navigation-compose:0.1.0")
+    implementation("io.github.0dimidrol0:capsule-navigation-xml:0.1.0")
 }
 ```
 

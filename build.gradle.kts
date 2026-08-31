@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.GradleException
+import org.gradle.plugins.signing.SigningExtension
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -101,6 +102,13 @@ subprojects {
                     connection.set("scm:git:git://github.com/0Dimidrol0/Capsule-Architecture.git")
                     developerConnection.set("scm:git:ssh://git@github.com:0Dimidrol0/Capsule-Architecture.git")
                 }
+            }
+        }
+
+        // Keep CI's in-memory signing; local releases use the GnuPG keyring.
+        if (providers.gradleProperty("signingInMemoryKey").orNull.isNullOrBlank()) {
+            extensions.configure<SigningExtension> {
+                useGpgCmd()
             }
         }
     }

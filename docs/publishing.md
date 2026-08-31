@@ -38,8 +38,62 @@ Configure these repository Actions secrets before creating a release tag:
 - `SIGNING_IN_MEMORY_KEY`: ASCII-armored private GPG key
 - `SIGNING_IN_MEMORY_KEY_PASSWORD`: private key passphrase
 
-Credentials and private signing keys must never be stored in `gradle.properties` or committed to
-the repository.
+Credentials and private signing keys must never be stored in the repository's `gradle.properties`
+or committed to the repository.
+
+## Local signing with GnuPG
+
+When `signingInMemoryKey` is not supplied, all library modules use `signing { useGpgCmd() }`.
+This uses an existing private key in your local GnuPG keyring, without exporting it. The
+`signingInMemoryKey` configuration takes precedence so GitHub Actions keeps using its Secrets.
+
+Install GnuPG (Gpg4win on Windows), then find your signing key:
+
+```shell
+gpg --list-secret-keys --keyid-format LONG
+```
+
+Put these properties in your **user-level** `~/.gradle/gradle.properties`
+(`%USERPROFILE%\.gradle\gradle.properties` on Windows), not the repository file:
+
+```properties
+signing.gnupg.executable=gpg
+signing.gnupg.useLegacyGpg=false
+signing.gnupg.keyName=YOUR_SIGNING_KEY_FINGERPRINT
+signing.gnupg.passphrase=YOUR_PRIVATE_KEY_PASSPHRASE
+
+mavenCentralUsername=YOUR_CENTRAL_TOKEN_USERNAME
+mavenCentralPassword=YOUR_CENTRAL_TOKEN_PASSWORD
+```
+
+Use `useLegacyGpg=false` with GnuPG 2.x. The `passphrase` unlocks the private key; it is not
+your Maven Central password and does not replace the key itself. Restrict access to this local
+file. If `passphrase` is omitted, GnuPG can ask for it through `gpg-agent` instead.
+
+If you previously exported an in-memory key into this PowerShell session, clear it to select
+GnuPG signing (also remove any `signingInMemoryKey` property from your user Gradle configuration):
+
+```powershell
+Remove-Item Env:ORG_GRADLE_PROJECT_signingInMemoryKey -ErrorAction SilentlyContinue
+Remove-Item Env:ORG_GRADLE_PROJECT_signingInMemoryKeyId -ErrorAction SilentlyContinue
+Remove-Item Env:ORG_GRADLE_PROJECT_signingInMemoryKeyPassword -ErrorAction SilentlyContinue
+```
+
+With JDK 17 selected, first verify signing without uploading anything:
+
+```powershell
+.\gradlew.bat :capsule-core:signMavenPublication "-PVERSION_NAME=0.1.0" --no-daemon
+```
+
+Then publish all eight libraries:
+
+```powershell
+.\gradlew.bat publishAndReleaseToMavenCentral "-PVERSION_NAME=0.1.0" --no-daemon
+```
+
+Do not reuse a compromised private key or an already published release version. See the
+[Gradle signing documentation](https://docs.gradle.org/current/userguide/signing_plugin.html#sec:using_gpg_agent)
+for GnuPG configuration details.
 
 ## Release flow
 

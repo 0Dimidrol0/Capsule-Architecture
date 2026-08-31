@@ -20,6 +20,7 @@ include(
     ":capsule-core",
     ":capsule-base-viewmodel",
     ":capsule-base-fragment-xml",
+    ":capsule-debug",
     ":capsule-middleware",
     ":capsule-network",
     ":capsule-navigation-compose",

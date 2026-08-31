@@ -10,21 +10,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.launch
-
-/** Inflate binding instance for a fragment view. */
-typealias InflateBinding<Binding> = (LayoutInflater, ViewGroup?, Boolean) -> Binding
-
-/** Extracts root [View] from a binding instance. */
-typealias BindingRoot<Binding> = (Binding) -> View
 
 /**
  * Lifecycle-safe XML Fragment base for Capsule-driven screens.
  */
-abstract class BaseCapsuleFragment<Binding, State, Effect>(
+abstract class BaseCapsuleFragment<Binding: ViewBinding, State, Effect>(
     private val inflate: InflateBinding<Binding>,
-    private val bindingRoot: BindingRoot<Binding>,
     private val minActiveState: Lifecycle.State = Lifecycle.State.STARTED
 ) : Fragment() {
 
@@ -46,25 +39,22 @@ abstract class BaseCapsuleFragment<Binding, State, Effect>(
     ): View {
         val newBinding = inflate(inflater, container, false)
         _binding = newBinding
-        return bindingRoot(newBinding)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBindingCreated(binding)
+        bindIntents()
         observeState()
         observeEffects()
     }
 
     override fun onDestroyView() {
-        onBindingDestroyed(binding)
         _binding = null
         super.onDestroyView()
     }
 
-    protected open fun onBindingCreated(binding: Binding) = Unit
-
-    protected open fun onBindingDestroyed(binding: Binding) = Unit
+    protected abstract fun bindIntents()
 
     protected abstract fun render(state: State)
 

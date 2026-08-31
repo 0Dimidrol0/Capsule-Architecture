@@ -9,6 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 class LoginViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : BaseCapsuleViewModel<LoginIntent, LoginState, LoginEffect>() {
+
+    override val capsuleDebugName: String = "XML Login"
+
     override fun buildCapsule(scope: CoroutineScope): Capsule<LoginIntent, LoginState, LoginEffect> {
         return LoginCapsule(
             initialState = LoginState(

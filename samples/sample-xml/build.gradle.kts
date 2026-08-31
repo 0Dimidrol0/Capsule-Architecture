@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,7 +7,7 @@ plugins {
 
 android {
     namespace = "io.github.dimidrol.capsule.samples.xml"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.dimidrol.capsule.samples.xml"
@@ -32,12 +34,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         viewBinding = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -46,6 +50,7 @@ dependencies {
     implementation(project(":capsule-base-viewmodel"))
     implementation(project(":capsule-base-fragment-xml"))
     implementation(project(":capsule-navigation-xml"))
+    debugImplementation(project(":capsule-debug"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

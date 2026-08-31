@@ -1,6 +1,6 @@
 [versions]
-agp = "8.6.0"
-kotlin = "2.0.21"
+agp = "8.13.2"
+kotlin = "2.3.10"
 coroutines = "1.9.0"
 lifecycle = "2.8.7"
 activityCompose = "1.9.3"
@@ -12,6 +12,7 @@ material = "1.12.0"
 fragment = "1.8.5"
 junit4 = "4.13.2"
 turbine = "1.1.0"
+mavenPublish = "0.36.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,3 +48,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

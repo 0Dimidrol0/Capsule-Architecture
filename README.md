@@ -53,6 +53,7 @@ capsule-core
     ^
     +-- capsule-base-viewmodel
     +-- capsule-base-fragment-xml
+    +-- capsule-debug
     +-- capsule-middleware
     +-- capsule-network
     +-- capsule-navigation-compose
@@ -73,15 +74,21 @@ Dependency rule:
 
 Current version: `0.1.0-SNAPSHOT`
 
+Maven Central group: `io.github.0dimidrol0`. Kotlin packages and Android namespaces remain under
+`io.github.dimidrol.capsule` because a Java/Kotlin package segment cannot start with a digit.
+Release tags publish every library artifact independently. See [Publishing](docs/publishing.md) for
+the required GitHub secrets and release flow.
+
 ```kotlin
 dependencies {
-    implementation("io.github.dimidrol:capsule-core:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-base-viewmodel:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-base-fragment-xml:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-middleware:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-network:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-navigation-compose:0.1.0-SNAPSHOT")
-    implementation("io.github.dimidrol:capsule-navigation-xml:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-core:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-base-viewmodel:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-base-fragment-xml:0.1.0-SNAPSHOT")
+    debugImplementation("io.github.0dimidrol0:capsule-debug:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-middleware:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-network:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-navigation-compose:0.1.0-SNAPSHOT")
+    implementation("io.github.0dimidrol0:capsule-navigation-xml:0.1.0-SNAPSHOT")
 }
 ```
 
@@ -113,7 +120,11 @@ class FeatureCapsule(
 
 See Compose sample login feature:
 
-- `samples/sample-compose/login/LoginContract.kt`
+- `samples/sample-compose/login/LoginIntent.kt`
+- `samples/sample-compose/login/LoginState.kt`
+- `samples/sample-compose/login/LoginOperation.kt`
+- `samples/sample-compose/login/LoginResult.kt`
+- `samples/sample-compose/login/LoginEffect.kt`
 - `samples/sample-compose/login/LoginCapsule.kt`
 - `samples/sample-compose/login/LoginOperationHandler.kt`
 - `samples/sample-compose/login/LoginViewModel.kt`
@@ -127,6 +138,28 @@ Available module: `capsule-middleware`
 - `TimingMiddleware`
 - `StateHistoryMiddleware`
 - `DebugTimelineMiddleware`
+
+## Debug State Time Travel
+
+`capsule-debug` discovers active `BaseCapsuleViewModel` screens, keeps a bounded history of their
+live states, and exposes an in-app floating inspector. Selecting a snapshot previews it in the UI
+without rewriting the Capsule runtime. Press `LIVE`, or send the next intent, to return to the
+latest runtime state.
+
+Install it from a debug-only `Application` source set:
+
+```kotlin
+class DebugApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        CapsuleDebugService.install(this)
+    }
+}
+```
+
+No overlay permission is required. See [Debugging](docs/debugging.md) for setup and behavior.
+The floating button can be dragged anywhere inside the current Activity and keeps its relative
+position when the screen or orientation changes.
 
 ## Network-Aware Operations
 

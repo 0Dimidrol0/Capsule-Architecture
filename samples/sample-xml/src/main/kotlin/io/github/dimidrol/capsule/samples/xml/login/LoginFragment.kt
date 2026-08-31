@@ -14,10 +14,7 @@ import io.github.dimidrol.capsule.samples.xml.databinding.FragmentLoginBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-class LoginFragment : BaseCapsuleFragment<FragmentLoginBinding, LoginState, LoginEffect>(
-    inflate = FragmentLoginBinding::inflate,
-    bindingRoot = { it.root }
-) {
+class LoginFragment : BaseCapsuleFragment<FragmentLoginBinding, LoginState, LoginEffect>(FragmentLoginBinding::inflate) {
 
     private val viewModel: LoginViewModel by viewModels()
 
@@ -30,11 +27,6 @@ class LoginFragment : BaseCapsuleFragment<FragmentLoginBinding, LoginState, Logi
 
     override val effects: Flow<LoginEffect>
         get() = viewModel.effects
-
-    override fun onBindingCreated(binding: FragmentLoginBinding) {
-        super.onBindingCreated(binding)
-        bindIntents()
-    }
 
     override suspend fun onEffect(effect: LoginEffect) {
         when (effect) {
@@ -63,7 +55,7 @@ class LoginFragment : BaseCapsuleFragment<FragmentLoginBinding, LoginState, Logi
         binding.errorText.text = (state.loginOperation as? OperationState.Failed)?.message.orEmpty()
     }
 
-    private fun bindIntents() {
+    override fun bindIntents() {
         binding.emailEditText.doAfterTextChanged { text ->
             viewModel.send(LoginIntent.EmailChanged(text?.toString().orEmpty()))
         }

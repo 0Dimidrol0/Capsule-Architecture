@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, test, and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Run unit tests and source layout checks
+        run: |
+          ./gradlew \
+            verifyKotlinFileLayout \
+            :capsule-core:test \
+            :capsule-base-viewmodel:testDebugUnitTest \
+            :capsule-debug:testDebugUnitTest \
+            :capsule-middleware:test \
+            :samples:sample-compose:testDebugUnitTest \
+            :samples:sample-xml:testDebugUnitTest \
+            --no-daemon --stacktrace
+
+      - name: Assemble libraries and samples
+        run: |
+          ./gradlew \
+            :capsule-core:assemble \
+            :capsule-base-viewmodel:assembleRelease \
+            :capsule-base-fragment-xml:assembleRelease \
+            :capsule-debug:assembleRelease \
+            :capsule-middleware:assemble \
+            :capsule-network:assembleRelease \
+            :capsule-navigation-compose:assembleRelease \
+            :capsule-navigation-xml:assembleRelease \
+            :samples:sample-compose:assembleDebug \
+            :samples:sample-xml:assembleDebug \
+            :samples:sample-full:assembleDebug \
+            --no-daemon --stacktrace
+
+      - name: Run Android lint
+        run: |
+          ./gradlew \
+            :capsule-base-viewmodel:lint \
+            :capsule-base-fragment-xml:lint \
+            :capsule-debug:lint \
+            :capsule-network:lint \
+            :capsule-navigation-compose:lint \
+            :capsule-navigation-xml:lint \
+            :samples:sample-compose:lintDebug \
+            :samples:sample-xml:lintDebug \
+            :samples:sample-full:lintDebug \
+            --no-daemon --stacktrace

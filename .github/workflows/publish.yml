@@ -1,0 +1,146 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Validate release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Release tag must look like v0.1.0 or v0.1.0-rc.1"
+            exit 1
+          fi
+
+      - name: Run release checks
+        run: |
+          ./gradlew \
+            verifyKotlinFileLayout \
+            :capsule-core:check \
+            :capsule-base-viewmodel:testDebugUnitTest \
+            :capsule-base-viewmodel:assembleRelease \
+            :capsule-base-fragment-xml:assembleRelease \
+            :capsule-debug:testDebugUnitTest \
+            :capsule-debug:assembleRelease \
+            :capsule-middleware:check \
+            :capsule-network:assembleRelease \
+            :capsule-navigation-compose:assembleRelease \
+            :capsule-navigation-xml:assembleRelease \
+            :samples:sample-compose:testDebugUnitTest \
+            :samples:sample-compose:assembleDebug \
+            :samples:sample-xml:testDebugUnitTest \
+            :samples:sample-xml:assembleDebug \
+            :samples:sample-full:assembleDebug \
+            :capsule-base-viewmodel:lint \
+            :capsule-base-fragment-xml:lint \
+            :capsule-debug:lint \
+            :capsule-network:lint \
+            :capsule-navigation-compose:lint \
+            :capsule-navigation-xml:lint \
+            :samples:sample-compose:lintDebug \
+            :samples:sample-xml:lintDebug \
+            :samples:sample-full:lintDebug \
+            --no-daemon --stacktrace
+
+  publish:
+    name: Publish to Maven Central
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Validate Maven Central secrets
+        shell: bash
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          SIGNING_IN_MEMORY_KEY: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
+          SIGNING_IN_MEMORY_KEY_PASSWORD: ${{ secrets.SIGNING_IN_MEMORY_KEY_PASSWORD }}
+        run: |
+          missing=0
+          for variable in MAVEN_CENTRAL_USERNAME MAVEN_CENTRAL_PASSWORD SIGNING_IN_MEMORY_KEY SIGNING_IN_MEMORY_KEY_PASSWORD; do
+            if [[ -z "${!variable}" ]]; then
+              echo "Missing GitHub Actions secret: $variable"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Publish and release artifacts
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_IN_MEMORY_KEY_PASSWORD }}
+        run: |
+          ./gradlew \
+            :capsule-core:publishAndReleaseToMavenCentral \
+            :capsule-base-viewmodel:publishAndReleaseToMavenCentral \
+            :capsule-base-fragment-xml:publishAndReleaseToMavenCentral \
+            :capsule-debug:publishAndReleaseToMavenCentral \
+            :capsule-middleware:publishAndReleaseToMavenCentral \
+            :capsule-network:publishAndReleaseToMavenCentral \
+            :capsule-navigation-compose:publishAndReleaseToMavenCentral \
+            :capsule-navigation-xml:publishAndReleaseToMavenCentral \
+            --no-daemon --stacktrace
+
+  github-release:
+    name: Create GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create release from tag
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
